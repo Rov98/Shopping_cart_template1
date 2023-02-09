@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import './/formater/rupiah_format.dart';
 
 class totalPesananWidget extends StatelessWidget {
   totalPesananWidget({
@@ -23,15 +24,15 @@ class totalPesananWidget extends StatelessWidget {
                       color: Colors.black,
                       fontWeight: FontWeight.w500),
                   children: [
-                TextSpan(text: 'Total Pesanan '),
+                const TextSpan(text: 'Total Pesanan '),
                 TextSpan(
                   text: '($totalType Menu): ',
-                  style: TextStyle(fontWeight: FontWeight.w400),
+                  style: const TextStyle(fontWeight: FontWeight.w400),
                 ),
               ])),
           Text(
-            'Rp.$totalQuantity',
-            style: TextStyle(
+            Rupiah_Format.convertIDR(totalQuantity),
+            style: const TextStyle(
               color: Colors.blue,
               fontWeight: FontWeight.bold,
               fontSize: 15,

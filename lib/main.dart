@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:venturo_test_app/homePage.dart';
+import 'package:venturo_test_app/screen/homePage.dart';
 import 'package:get/get.dart';
 
 void main() {
@@ -14,6 +14,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return GetMaterialApp(
       title: 'App Title',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),

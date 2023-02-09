@@ -1,12 +1,25 @@
 import 'package:flutter/material.dart';
+import './/formater/rupiah_format.dart';
 
 class pesanButtonWidget extends StatelessWidget {
-  const pesanButtonWidget({
+  pesanButtonWidget({
     super.key,
+    required this.price,
+    required this.discount,
+    required this.pesanButton,
+    required this.batalkanButton,
+    required this.isOrder,
   });
+  int price, discount;
+  bool isOrder;
+  VoidCallback pesanButton, batalkanButton;
 
   @override
   Widget build(BuildContext context) {
+    //create var total for price and discount operation
+    int total = price - discount;
+    //create condiiton
+    total <= 0 ? total = 0 : total;
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
       decoration: const BoxDecoration(
@@ -36,8 +49,8 @@ class pesanButtonWidget extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    'Rp.28.000',
-                    style: TextStyle(
+                    Rupiah_Format.convertIDR(total),
+                    style: const TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
                       color: Colors.blue,
@@ -55,10 +68,10 @@ class pesanButtonWidget extends StatelessWidget {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(30.0),
                   )),
-              onPressed: () {},
-              child: const Text(
-                'Pesan Sekarang',
-                style: TextStyle(
+              onPressed: !isOrder ? pesanButton : batalkanButton,
+              child: Text(
+                !isOrder ? 'Pesan Sekarang' : 'Batalkan',
+                style: const TextStyle(
                   color: Colors.white,
                   fontSize: 15,
                 ),

@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:venturo_test_app/controller/item_controller.dart';
+import './/formater/rupiah_format.dart';
 
 class pilihanVoucherWidget extends StatelessWidget {
   pilihanVoucherWidget({
     super.key,
+    required this.passVoucherData,
+    required this.discount,
   });
 
   var controllerVoucherInput = TextEditingController();
-  var find = Get.put(Item_Controller());
+  Function passVoucherData;
+  var discount;
 
   @override
   Widget build(BuildContext context) {
@@ -34,103 +36,123 @@ class pilihanVoucherWidget extends StatelessWidget {
             onPressed: () {
               showModalBottomSheet(
                 context: context,
+                isScrollControlled: true,
                 backgroundColor: Colors.white,
-                builder: (context) => Container(
-                  padding: const EdgeInsets.symmetric(
-                      vertical: 10.0, horizontal: 20.0),
-                  decoration: const BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(20.0),
-                      topRight: Radius.circular(20.0),
+                builder: (context) => Padding(
+                  padding: EdgeInsets.only(
+                      bottom: MediaQuery.of(context).viewInsets.bottom),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 10.0, horizontal: 20.0),
+                    decoration: const BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(20.0),
+                        topRight: Radius.circular(20.0),
+                      ),
                     ),
-                  ),
-                  height: 200,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: const [
-                          Icon(
-                            Icons.discount,
-                            color: Colors.blue,
-                          ),
-                          Text(
-                            'Punya Kode Voucher?',
-                            style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 25,
-                                fontWeight: FontWeight.bold),
-                          ),
-                        ],
-                      ),
-                      Container(
-                        alignment: Alignment.centerLeft,
-                        child: const Text(
-                          'Masukan kode voucher disini',
-                          textAlign: TextAlign.left,
-                          style: TextStyle(
-                            fontSize: 15,
-                            color: Colors.black,
-                            fontWeight: FontWeight.w400,
-                          ),
-                        ),
-                      ),
-                      Container(
-                        margin: const EdgeInsets.symmetric(vertical: 10.0),
-                        child: TextField(
-                          controller: controllerVoucherInput,
-                          decoration: InputDecoration(
-                            hintText: 'Masukan Kode Voucher',
-                            suffixIcon: IconButton(
-                              onPressed: () {
-                                controllerVoucherInput.clear();
-                              },
-                              icon: const Icon(
-                                Icons.cancel,
-                                color: Colors.black,
-                              ),
+                    height: 200,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: const [
+                            Icon(
+                              Icons.discount,
+                              color: Colors.blue,
                             ),
-                          ),
-                          style: const TextStyle(
-                            color: Colors.black,
-                            fontWeight: FontWeight.w300,
-                            fontSize: 15,
-                          ),
-                        ),
-                      ),
-                      SizedBox(
-                        width: double.infinity,
-                        child: ElevatedButton(
-                            onPressed: () {
-                              Get.find<Item_Controller>().getVoucher(
-                                  controllerVoucherInput.value.text);
-                              print('berhasil');
-                            },
-                            style: ElevatedButton.styleFrom(
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(30.0),
-                              ),
-                              padding: const EdgeInsets.symmetric(
-                                  vertical: 10.0, horizontal: 20.0),
-                              backgroundColor: Colors.blue,
-                            ),
-                            child: const Text(
-                              'Validasi Voucher',
+                            Text(
+                              'Punya Kode Voucher?',
                               style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.w500,
-                                fontSize: 20,
+                                  color: Colors.black,
+                                  fontSize: 25,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                          ],
+                        ),
+                        Container(
+                          alignment: Alignment.centerLeft,
+                          child: const Text(
+                            'Masukan kode voucher disini',
+                            textAlign: TextAlign.left,
+                            style: TextStyle(
+                              fontSize: 15,
+                              color: Colors.black,
+                              fontWeight: FontWeight.w400,
+                            ),
+                          ),
+                        ),
+                        Container(
+                          margin: const EdgeInsets.symmetric(vertical: 10.0),
+                          child: TextField(
+                            controller: controllerVoucherInput,
+                            decoration: InputDecoration(
+                              hintText: 'Masukan Kode Voucher',
+                              suffixIcon: IconButton(
+                                onPressed: () {
+                                  controllerVoucherInput.clear();
+                                },
+                                icon: const Icon(
+                                  Icons.cancel,
+                                  color: Colors.black,
+                                ),
                               ),
-                            )),
-                      )
-                    ],
+                            ),
+                            style: const TextStyle(
+                              color: Colors.black,
+                              fontWeight: FontWeight.w300,
+                              fontSize: 15,
+                            ),
+                          ),
+                        ),
+                        SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton(
+                              onPressed: () => passVoucherData(
+                                  controllerVoucherInput.value.text),
+                              style: ElevatedButton.styleFrom(
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(30.0),
+                                ),
+                                padding: const EdgeInsets.symmetric(
+                                    vertical: 10.0, horizontal: 20.0),
+                                backgroundColor: Colors.blue,
+                              ),
+                              child: const Text(
+                                'Validasi Voucher',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 20,
+                                ),
+                              )),
+                        )
+                      ],
+                    ),
                   ),
                 ),
               );
             },
-            icon: const Text('Input Voucher'),
+            icon: discount <= 0
+                ? const Text('Input Voucher')
+                : Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      const Text(
+                        'hemat',
+                        style: TextStyle(color: Colors.black, fontSize: 12),
+                      ),
+                      Text(
+                        Rupiah_Format.convertIDR(discount),
+                        style: const TextStyle(
+                          fontSize: 15,
+                          color: Colors.red,
+                          fontWeight: FontWeight.w400,
+                        ),
+                      ),
+                    ],
+                  ),
             label: const Icon(Icons.arrow_forward_ios),
           )
         ],

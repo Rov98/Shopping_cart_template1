@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../constant.dart';
-import 'qunatityWidget.dart';
+import 'quantityWidget.dart';
 
 class itemCardWidget extends StatelessWidget {
   itemCardWidget({
@@ -12,9 +12,10 @@ class itemCardWidget extends StatelessWidget {
     required this.tipe,
     required this.addItem,
     required this.removeItem,
+    required this.isOrder,
   });
   String image, title, price, tipe;
-
+  bool isOrder;
   VoidCallback addItem, removeItem;
 
   @override
@@ -24,19 +25,27 @@ class itemCardWidget extends StatelessWidget {
       margin: const EdgeInsets.all(10.0),
       color: mainCardColor,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20.0),
+        borderRadius: BorderRadius.circular(10.0),
       ),
       child: ListTile(
-        leading: ClipRRect(
-          child: Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(20.0),
-              color: Colors.grey,
-            ),
-            width: 100,
-            child: Image(
-              image: NetworkImage(image),
-              fit: BoxFit.contain,
+        contentPadding: const EdgeInsets.symmetric(horizontal: 5.0),
+        leading: Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: 10.0,
+          ),
+          child: ClipRRect(
+            child: SizedBox.square(
+              dimension: 60,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade400,
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
+                child: Image(
+                  image: NetworkImage(image),
+                  fit: BoxFit.contain,
+                ),
+              ),
             ),
           ),
         ),
@@ -72,6 +81,7 @@ class itemCardWidget extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             quantityWidget(
+              isOrder: isOrder,
               addItem: addItem,
               removeItem: removeItem,
             ),
