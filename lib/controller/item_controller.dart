@@ -6,6 +6,7 @@ import 'package:venturo_test_app/model/Voucher.dart';
 class Item_Controller extends GetxController {
   List<Data> _listItem = [];
   List<VoucherData> _listVoucher = [];
+  var _itemOrder = {}.obs;
 
   List<Data> get allItem {
     return [..._listItem];
@@ -25,6 +26,15 @@ class Item_Controller extends GetxController {
     final data = await Api_Helper().fetchData();
     _listItem = [...data];
     update();
+  }
+
+  void addItem(Data data) {
+    if (_itemOrder.containsKey(data)) {
+      _itemOrder[data] += 1;
+      print(_itemOrder.keys.length);
+    } else {
+      _itemOrder[data] = 1;
+    }
   }
 
   Future<void> getVoucher(String kode) async {

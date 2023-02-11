@@ -3,27 +3,23 @@ import 'package:get/get.dart';
 
 import '../controller/item_controller.dart';
 import '../widget/itemCardWidget.dart';
+import '../widget/cartCardWidget.dart';
 import '../widget/pesanButtonWidget.dart';
 
 import '../widget/pilihanVoucherWidget.dart';
 import '../widget/totalPesanan.dart';
 
-class HomePage extends StatefulWidget {
+class HomePage extends StatelessWidget {
   HomePage({super.key});
 
   var totalQuantity = 0.obs;
-  var totalType = <String>[].obs;
   var isVoucherused = false.obs;
   var discount = 0.obs;
   var isOrder = false.obs;
+  var itemOrder = {}.obs;
 
-  @override
-  State<HomePage> createState() => _HomePageState();
-}
-
-class _HomePageState extends State<HomePage> {
   pesanButton() {
-    widget.isOrder.value = !widget.isOrder.value;
+    isOrder.value = !isOrder.value;
   }
 
   batalkanButton() {
@@ -75,14 +71,24 @@ class _HomePageState extends State<HomePage> {
                 color: Colors.black,
               ),
             )),
-        onPressed: () {},
+        onPressed: () {
+          isOrder.value = !isOrder.value;
+          resetValue();
+          Get.back();
+        },
         child: const Text(
           'Yakin',
           style: TextStyle(color: Colors.black),
         ),
       ),
     );
-    widget.isOrder.value = !widget.isOrder.value;
+  }
+
+  resetValue() {
+    totalQuantity.value = 0;
+    isVoucherused.value = false;
+    discount.value = 0;
+    itemOrder.value.clear();
   }
 
   addVoucher(String value) {
@@ -91,12 +97,12 @@ class _HomePageState extends State<HomePage> {
         //add newVoucher to variable
         var newVoucher = Get.find<Item_Controller>().allVoucher.first;
         //check if null
-        if (!widget.isVoucherused.value && newVoucher.createdAt.isNotEmpty) {
+        if (!isVoucherused.value && newVoucher.createdAt.isNotEmpty) {
           //set discount value
-          widget.discount.value = newVoucher.nominal;
+          discount.value = newVoucher.nominal;
           //close dialog and used voucher once
           Get.back();
-          widget.isVoucherused.value = !widget.isVoucherused.value;
+          isVoucherused.value = !isVoucherused.value;
           //-->
         } else if (newVoucher.createdAt.isEmpty) {
           //if null then show dialog
@@ -126,33 +132,37 @@ class _HomePageState extends State<HomePage> {
 
   void addItem(Item_Controller controller, int index) {
     //add quantity
-    var id = controller.allItem[index].id.toString();
-    var findIndex =
-        widget.totalType.value.indexWhere((element) => element == id);
-
-    widget.totalQuantity.value =
-        widget.totalQuantity.value + controller.allItem[index].harga;
-    if (findIndex == -1) {
-      widget.totalType.value.add(id);
+    totalQuantity.value = totalQuantity.value + controller.allItem[index].harga;
+    // itemOrder as a temporary map to use for item in the cart after we press order
+    if (itemOrder.containsKey(controller.allItem[index])) {
+      // assign value of itemOrder with the key of controller.allItem[index].
+      // the key a bit long but it's easy to understand and it's must be a unique keys.
+      // not the id of controller.allItem[index].id
+      itemOrder[controller.allItem[index]] += 1;
+    } else {
+      itemOrder[controller.allItem[index]] = 1;
     }
   }
 
   void removeItem(Item_Controller controller, int index) {
     //decrease quantity if quantity already 0 then can't be decrease
-    var id = controller.allItem[index].id.toString();
-    var findIndex =
-        widget.totalType.value.indexWhere((element) => element == id);
-
-    if (widget.totalQuantity.value <= 0) {
-      widget.totalQuantity.value = 0;
+    if (totalQuantity.value <= 0) {
+      totalQuantity.value = 0;
     } else {
-      widget.totalQuantity.value =
-          widget.totalQuantity.value - controller.allItem[index].harga;
+      totalQuantity.value =
+          totalQuantity.value - controller.allItem[index].harga;
     }
-
-    //remove id if quantity is 0 and findIndex
-    if (findIndex != -1 && widget.totalQuantity.value <= 0) {
-      widget.totalType.value.removeAt(findIndex);
+    // if contains key data like the previous addItem AND when the value is 1 which is when
+    // we remove the key(affect value) where key is equal to the data we want(controller.allItem[index])
+    if (itemOrder.containsKey(controller.allItem[index]) &&
+        itemOrder[controller.allItem[index]] == 1) {
+      itemOrder.removeWhere((key, value) => key == controller.allItem[index]);
+    } else if (itemOrder.containsKey(controller.allItem[index]) &&
+        itemOrder[controller.allItem[index]] > 0) {
+      //if still containsKey but value > 0 we can -1 the value
+      itemOrder[controller.allItem[index]] -= 1;
+    } else {
+      itemOrder;
     }
   }
 
@@ -170,15 +180,22 @@ class _HomePageState extends State<HomePage> {
                 builder: (controller) => ListView.builder(
                   itemCount: controller.allItem.length,
                   itemBuilder: (context, index) => Obx(
-                    () => itemCardWidget(
-                      isOrder: widget.isOrder.value,
-                      addItem: () => addItem(controller, index),
-                      removeItem: () => removeItem(controller, index),
-                      title: controller.allItem[index].nama,
-                      image: controller.allItem[index].gambar,
-                      price: controller.allItem[index].harga.toString(),
-                      tipe: controller.allItem[index].tipe,
-                    ),
+                    () => isOrder.value
+                        ? cartCardWidget(
+                            title: controller.allItem[index].nama,
+                            image: controller.allItem[index].gambar,
+                            price: controller.allItem[index].harga.toString(),
+                            tipe: controller.allItem[index].tipe,
+                            quantity: itemOrder[controller.allItem[index]],
+                          )
+                        : itemCardWidget(
+                            addItem: () => addItem(controller, index),
+                            removeItem: () => removeItem(controller, index),
+                            title: controller.allItem[index].nama,
+                            image: controller.allItem[index].gambar,
+                            price: controller.allItem[index].harga.toString(),
+                            tipe: controller.allItem[index].tipe,
+                          ),
                   ),
                 ),
               ),
@@ -193,33 +210,27 @@ class _HomePageState extends State<HomePage> {
                     topRight: Radius.circular(20.0),
                   ),
                 ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    Obx(
-                      () => totalPesananWidget(
-                        totalQuantity: widget.totalQuantity.value,
-                        totalType: widget.totalType.value.length,
-                      ),
-                    ),
-                    const dividerWidget(),
-                    Obx(
-                      () => pilihanVoucherWidget(
-                        passVoucherData: addVoucher,
-                        discount: widget.discount.value,
-                      ),
-                    ),
-                    Obx(
-                      () => pesanButtonWidget(
-                        price: widget.totalQuantity.value,
-                        discount: widget.discount.value,
-                        isOrder: widget.isOrder.value,
-                        batalkanButton: batalkanButton,
-                        pesanButton: pesanButton,
-                      ),
-                    ),
-                  ],
-                ),
+                child: Obx(() => Column(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        totalPesananWidget(
+                          totalQuantity: totalQuantity.value,
+                          totalType: itemOrder.keys.length,
+                        ),
+                        const dividerWidget(),
+                        pilihanVoucherWidget(
+                          passVoucherData: addVoucher,
+                          discount: discount.value,
+                        ),
+                        pesanButtonWidget(
+                          price: totalQuantity.value,
+                          discount: discount.value,
+                          isOrder: isOrder.value,
+                          batalkanButton: batalkanButton,
+                          pesanButton: pesanButton,
+                        ),
+                      ],
+                    )),
               ),
             )
           ],

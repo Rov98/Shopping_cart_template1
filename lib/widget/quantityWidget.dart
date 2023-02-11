@@ -6,10 +6,8 @@ class quantityWidget extends StatelessWidget {
     super.key,
     required this.addItem,
     required this.removeItem,
-    required this.isOrder,
   });
   VoidCallback addItem, removeItem;
-  bool isOrder;
   var numOfQuantity = 0.obs;
 
   @override
@@ -17,8 +15,7 @@ class quantityWidget extends StatelessWidget {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        !isOrder
-            ? SizedBox(
+        SizedBox(
                 width: 30,
                 height: 30,
                 child: OutlinedButton(
@@ -35,11 +32,6 @@ class quantityWidget extends StatelessWidget {
                   },
                   child: const Icon(Icons.remove, color: Colors.blue),
                 ),
-              )
-            : Container(
-                height: 50,
-                width: 2,
-                color: Colors.grey.shade400,
               ),
         const SizedBox(
           width: 10,
@@ -50,9 +42,7 @@ class quantityWidget extends StatelessWidget {
             )),
         const SizedBox(
           width: 10,
-        ),
-        !isOrder
-            ? SizedBox(
+        ),SizedBox(
                 width: 30,
                 height: 30,
                 child: OutlinedButton(
@@ -66,9 +56,6 @@ class quantityWidget extends StatelessWidget {
                   child: const Icon(Icons.add, color: Colors.blue),
                 ),
               )
-            : const Padding(
-                padding: EdgeInsets.only(left: 20.0),
-              ),
       ],
     );
   }

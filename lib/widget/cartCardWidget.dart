@@ -3,25 +3,24 @@ import 'package:flutter/material.dart';
 import '../constant.dart';
 import 'quantityWidget.dart';
 
-class itemCardWidget extends StatelessWidget {
-  itemCardWidget({
+class cartCardWidget extends StatelessWidget {
+  cartCardWidget({
     super.key,
     required this.image,
     required this.title,
     required this.price,
     required this.tipe,
-    required this.addItem,
-    required this.removeItem,
+    required this.quantity,
   });
   String image, title, price, tipe;
-  VoidCallback addItem, removeItem;
+  int? quantity;
 
   @override
   Widget build(BuildContext context) {
     return Card(
       elevation: 5,
       margin: const EdgeInsets.all(10.0),
-      color: mainCardColor,
+      color: quantity == null ? Colors.grey : mainCardColor,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10.0),
       ),
@@ -75,12 +74,21 @@ class itemCardWidget extends StatelessWidget {
             )
           ],
         ),
-        trailing: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+        trailing: Row(
+          mainAxisSize: MainAxisSize.min,
           children: [
-            quantityWidget(
-              addItem: addItem,
-              removeItem: removeItem,
+            Container(
+              margin: const EdgeInsets.only(right: 10.0),
+              height: 50,
+              width: 2,
+              color: Colors.grey.shade400,
+            ),
+            Text(
+              quantity == null ? '0' : quantity.toString(),
+              style: const TextStyle(fontSize: 15, color: Colors.black),
+            ),
+            const SizedBox(
+              width: 20,
             ),
           ],
         ),

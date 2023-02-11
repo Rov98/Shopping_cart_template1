@@ -2,13 +2,6 @@
 //
 //     final menu = menuFromJson(jsonString);
 
-import 'package:meta/meta.dart';
-import 'dart:convert';
-
-Menu menuFromJson(String str) => Menu.fromJson(json.decode(str));
-
-String menuToJson(Menu data) => json.encode(data.toJson());
-
 class Menu {
     Menu({
         required this.statusCode,
